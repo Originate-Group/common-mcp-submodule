@@ -158,6 +158,17 @@ When both OAuth and PAT are configured:
 
 ## Client Configuration
 
+### Claude Desktop (Custom Connector)
+
+This server is designed to be used as a Custom Connector in Claude Desktop:
+
+1. Open Claude Desktop settings
+2. Navigate to Custom Connectors
+3. Add a new connector with your server URL (e.g., `https://api.example.com/mcp`)
+4. Authentication is handled via OAuth 2.1 or PAT headers automatically
+
+The server has been tested and verified working as a Custom Connector.
+
 ### Claude Code CLI
 
 Add to `~/.claude.json`:
@@ -170,23 +181,6 @@ Add to `~/.claude.json`:
       "url": "https://api.example.com/mcp",
       "headers": {
         "X-API-Key": "api_your_token_here"
-      }
-    }
-  }
-}
-```
-
-### Claude Desktop (OAuth)
-
-Add to `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "my-server": {
-      "transport": {
-        "type": "sse",
-        "url": "https://api.example.com/mcp/sse"
       }
     }
   }
