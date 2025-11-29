@@ -52,8 +52,9 @@ class MCPServer:
 
         # Register tool handler
         @server.tool_handler()
-        async def handle_tool(name, arguments, auth_token, user, is_pat):
+        async def handle_tool(name, arguments, auth_token, user, is_pat, user_agent):
             # Your tool implementation
+            # user_agent contains MCP client identifier (e.g., "claude-code/2.0.55")
             return [TextContent(type="text", text="Result")]
 
         # Mount to FastAPI app
@@ -115,14 +116,16 @@ class MCPServer:
                 arguments: dict,
                 auth_token: Optional[str],
                 user_id: Optional[str],
-                is_pat: bool
+                is_pat: bool,
+                user_agent: Optional[str]  # CR-005: MCP client identifier
             ) -> list[TextContent]
 
         Example:
             ```python
             @server.tool_handler()
-            async def handle_tool(name, arguments, auth_token, user_id, is_pat):
+            async def handle_tool(name, arguments, auth_token, user_id, is_pat, user_agent):
                 # Implement your tool execution logic
+                # user_agent contains the MCP client identifier (e.g., "claude-code/2.0.55")
                 if name == "my_tool":
                     return [TextContent(type="text", text="Success")]
                 return [TextContent(type="text", text=f"Unknown tool: {name}")]

@@ -28,7 +28,7 @@ class MCPProtocolHandler:
         server_name: str,
         server_version: str,
         list_tools_fn: Callable[[], Awaitable[list[Tool]]],
-        call_tool_fn: Callable[[str, dict, Optional[str], Optional[str], bool], Awaitable[list[TextContent]]],
+        call_tool_fn: Callable[[str, dict, Optional[str], Optional[str], bool, Optional[str]], Awaitable[list[TextContent]]],
     ):
         """Initialize the protocol handler.
 
@@ -37,7 +37,7 @@ class MCPProtocolHandler:
             server_version: Version string
             list_tools_fn: Async function to list available tools
             call_tool_fn: Async function to execute a tool
-                Signature: (name, arguments, auth_token, user_id, is_pat) -> list[TextContent]
+                Signature: (name, arguments, auth_token, user_id, is_pat, user_agent) -> list[TextContent]
         """
         self.server_name = server_name
         self.server_version = server_version
@@ -216,13 +216,17 @@ class MCPProtocolHandler:
                     is_pat = False
                 break
 
+        # Extract User-Agent for client identification (CR-005)
+        user_agent = request.headers.get("User-Agent")
+
         # Call the tool
         content_items = await self.call_tool_fn(
             tool_name,
             arguments,
             auth_token,
             user.get("user_id"),
-            is_pat
+            is_pat,
+            user_agent
         )
 
         # Convert MCP content items to JSON
