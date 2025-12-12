@@ -28,7 +28,7 @@ class MCPProtocolHandler:
         server_name: str,
         server_version: str,
         list_tools_fn: Callable[[], Awaitable[list[Tool]]],
-        call_tool_fn: Callable[[str, dict, Optional[str], Optional[str], bool], Awaitable[list[TextContent]]],
+        call_tool_fn: Callable[[str, dict, Optional[str], dict, bool], Awaitable[list[TextContent]]],
     ):
         """Initialize the protocol handler.
 
@@ -37,7 +37,8 @@ class MCPProtocolHandler:
             server_version: Version string
             list_tools_fn: Async function to list available tools
             call_tool_fn: Async function to execute a tool
-                Signature: (name, arguments, auth_token, user_id, is_pat) -> list[TextContent]
+                Signature: (name, arguments, auth_token, user, is_pat) -> list[TextContent]
+                Where user is the full user dict from authentication (includes user_id, email, name, etc.)
         """
         self.server_name = server_name
         self.server_version = server_version
@@ -216,12 +217,12 @@ class MCPProtocolHandler:
                     is_pat = False
                 break
 
-        # Call the tool
+        # Call the tool with full user context
         content_items = await self.call_tool_fn(
             tool_name,
             arguments,
             auth_token,
-            user.get("user_id"),
+            user,  # Pass full user dict instead of just user_id
             is_pat
         )
 

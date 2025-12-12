@@ -196,14 +196,20 @@ class DualAuthenticator:
 
         logger.info(f"✅ PAT authenticated for user: {user.get('email')}")
 
-        # Ensure consistent user structure
-        return {
+        # Ensure consistent user structure while preserving all fields from verify_function
+        # This allows application-specific fields (like organization_ids) to pass through
+        result = {
             "user_id": user.get("user_id"),
             "email": user.get("email"),
             "username": user.get("username"),
             "name": user.get("name"),
             "auth_method": "pat",
         }
+        # Preserve any additional fields from the verify function (e.g., organization_ids)
+        for key, value in user.items():
+            if key not in result:
+                result[key] = value
+        return result
 
     async def authenticate(self, request: Request) -> dict:
         """Authenticate request using PAT or OAuth.
